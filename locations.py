@@ -7,8 +7,8 @@ import os
 from math import radians, cos, sin, asin, sqrt
 
 def main():
-	rawData = os.path.join(os.path.dirname(__file__), '../data/US.txt')
-	cleanData = os.path.join(os.path.dirname(__file__), '../data/places.csv')
+	rawData = os.path.join(os.path.dirname(__file__), './data/US.txt')
+	cleanData = os.path.join(os.path.dirname(__file__), './data/places.csv')
 	prevLat = prevLng = 0
 
 	w = csv.writer(open(cleanData, 'wb'), delimiter = ',')
