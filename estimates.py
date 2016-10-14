@@ -1,30 +1,25 @@
 import requests as req
 import json
-import config
 
-class Uber:
-    url = 'https://api.uber.com/v1/estimates'
-    
-    def __init__(self):
-        self.auth = {'Authorization': 'Token ' + config.uberToken}
+with open('config.json', 'r') as f:
+    config = json.load(f)
 
-class Lyft:
-    url = 'https://api.lyft.com/v1'
+uber = {'url': 'https://api.uber.com/v1/estimates/time'};
+lyft = {'url': 'https://api.lyft.com/v1/eta'};
 
-    def __init__(self):
-        self.auth = {'Authorization': 'Bearer ' + config.lyftToken}
+def main();
+    authUber()
+    authLyft()
+    with open(os.path.join(os.path.dirname(__file__), './data/places')) as place:
 
-    class Estimate:
-    pass
-    #location = {'start_latitude': lat, 'start_longitude': long}
+def lyftAuth():
+    headers = {'Content-Type': 'application/json'}
+    data = '{"grant_type": "client_credentials", "scope": "public"}'
+    r = req.post('https://api.lyft.com/oauth/token', headers=headers, data=data, auth=(config['lyftID'], config['lyftSecret']))
+    token = json.loads(r.text)
+    lyft['token'] = token['access_token']
 
-    #r = req.get(uberUrl+'/time', headers=uberAuth, params=location)
-    #uberTime = json.loads(r.text)
-
-def main():
-    lyft = Lyft()
-    print lyft.auth
-
-if __name__ == '__main__':
+if __name__ = '__main__':
     main()
+   
 
