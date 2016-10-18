@@ -1,35 +1,37 @@
 import requests as req
-import json, sys, os, csv
+import json, os, csv
 
 with open('config.json', 'r') as f:
     config = json.load(f)
 
-uber = {'url': 'https://api.uber.com/v1/estimates/time'};
-lyft = {'url': 'https://api.lyft.com/v1/eta'};
+#token does not expire
+uber = {'url': 'https://api.uber.com/v1/estimates/time', 'auth': {'Authorization': 'Token ' + config['uberToken']}}
+#token expires every hour
+lyft = {'url': 'https://api.lyft.com/v1/eta'}
 
 def main():
     authLyft()
-    authUber()
     with open(os.path.join(os.path.dirname(__file__), './data/places.csv')) as places:
         for place in csv.reader(places, delimiter = ','):
-            location = {'start_latitude': place[2], 'start_longitude': place[3]}
-
+            lyftTime = etaLyft(place)
+            uberTime = etaUber(place)
 
 def authLyft():
     headers = {'Content-Type': 'application/json'}
     data = '{"grant_type": "client_credentials", "scope": "public"}'
     r = req.post('https://api.lyft.com/oauth/token', headers=headers, data=data, auth=(config['lyftID'], config['lyftSecret']))
     token = json.loads(r.text)
-    lyft['token'] = token['access_token']
+    lyft['auth'] = {'Authorization': 'Bearer ' + token['access_token']}
 
-def authUber():
-    pass
+def etaLyft(place):
+    location = {'lat': place[2], 'lng': place[3]}
+    r = req.get(lyft['url'], headers=lyft['auth'], params=location)
+    return json.loads(r.text)
 
-def etaLyft():
-    pass
-
-def etaUber():
-    pass
+def etaUber(place):
+    location = {'start_latitude': place[2], 'start_longitude': place[3]}
+    r = req.get(uber['url'], headers=uber['auth'], params=location)
+    return json.loads(r.text)
 
 if __name__ == '__main__':
     main()
